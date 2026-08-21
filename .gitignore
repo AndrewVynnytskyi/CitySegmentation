@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+.venv/
+venv/
+env/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# ML data / weights (Cityscapes is large — never committed)
+data/
+models/*.pt
+models/*.pth
+*.ckpt
+wandb/
+runs/
+lightning_logs/
+mlruns/
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+
+# Env / secrets
+.env
