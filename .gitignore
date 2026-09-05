@@ -1,32 +1,14 @@
-# Python
-__pycache__/
-*.py[cod]
-*.egg-info/
-.eggs/
-.venv/
-venv/
-env/
-.mypy_cache/
-.ruff_cache/
-.pytest_cache/
+# Cityscapes dataset — the download cell extracts ~11GB here (data/ exists, kept empty in git)
+data/
 
-# Jupyter
+# Checkpoints written by train_one_variant(): models/{run}.pt and {run}_resume.pt
+models/*.pt
+
+# Jupyter checkpoint copies of CitySegmentation.ipynb
 .ipynb_checkpoints/
 
-# ML data / weights (Cityscapes is large — never committed)
-data/
-models/*.pt
-models/*.pth
-*.ckpt
-wandb/
-runs/
-lightning_logs/
-mlruns/
+# Ruff cache — ruff is configured in pyproject.toml and run via the Makefile / pre-commit
+.ruff_cache/
 
-# OS / editor
-.DS_Store
+# PyCharm project files (.idea/ is present in this working tree)
 .idea/
-.vscode/
-
-# Env / secrets
-.env
