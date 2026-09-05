@@ -1,59 +1,75 @@
 # Cityscapes Segmentation — DeepLabV3+
 
-DeepLabV3+ (custom ASPP + decoder, ImageNet-pretrained Xception encoder) trained on [Cityscapes](https://www.cityscapes-dataset.com/) for 19-class street-scene segmentation. See [`CitySegmentation.ipynb`](CitySegmentation.ipynb).
+DeepLabV3+ (custom ASPP and decoder on an ImageNet-pretrained Xception encoder) for 19-class
+street-scene segmentation on [Cityscapes](https://www.cityscapes-dataset.com/). Everything lives in
+one notebook, [`CitySegmentation.ipynb`](CitySegmentation.ipynb), built to run on a Colab T4.
+A portfolio and personal-study project.
 
-## Architecture
+## Status
 
-- **Decoder / ASPP**: custom from-scratch implementation (`SeparableConv`, `ASPP`, `DecoderBlock`).
-- **Encoder**: a from-scratch `XceptionModel` (16 middle-flow blocks, no pretrained weights) is kept in the notebook as the original architecture reference, but **not used for training** — training a backbone this deep from random initialization needs far more compute than a Colab session allows (see the time estimate below). An ImageNet-pretrained Xception (`timm`) is used instead, same pivot as the companion [SAR-Ship-Segmentation](../SAR-Ship-Segmentation) project.
-- **Labels**: raw `gtFine_labelIds` (34 IDs) are mapped to the standard 19 Cityscapes train classes + ignore index, matching the published benchmark protocol.
+Work in progress.
 
-## Experiments
-
-1. **Transfer learning** — frozen vs. fine-tuned pretrained encoder
-2. **Grad-CAM** — per-class activation (defaults to `car`; swap to a thin class like `pole`/`motorcycle` for a harder case)
-3. **Failure case analysis** — high-confidence, low-mIoU validation images
-
-Each has a "Write here" markdown cell for your own interpretation.
-
-## Compute budget
-
-Training is sized to use roughly **~25 hours of T4 time** (≈27-28 compute units at your observed ~1.1 units/hour rate) — see the "Compute budget" markdown cell in the notebook for the epoch-count reasoning (`EPOCHS_FROZEN=88`, `EPOCHS_FINETUNED=154`). Estimated, not measured; watch Colab's usage panel after the first few epochs and adjust those two constants if the real per-epoch time is off from the ~6 min/epoch assumption.
+- **Works**: the architecture cells, the labelId→trainId mapping, the dataset/transform pipeline, and
+  the training loop. The saved output of the training cell in
+  [`CitySegmentation.ipynb`](CitySegmentation.ipynb) records a real Colab run: it reports the
+  frozen-encoder variant as complete at 88/88 epochs, and the fine-tuned variant at epoch 41 of 154
+  when the notebook was saved.
+- **Incomplete**: the fine-tuned run has not finished, so the Results table below is unfilled. The
+  three "Write here" interpretation cells are unwritten, as is the concluding section.
+- **Untested**: the Grad-CAM and failure-case cells have never been executed — they run after
+  training finishes and carry no output. Nothing here has been run outside Colab; there is no local
+  entry point.
+- The from-scratch `XceptionModel` in the early cells is kept as an architecture reference and is not
+  used for training; `PretrainedXceptionEncoder` (timm) is what the training cells build.
+- `CityScapsDataset` and `transforms_deep_lab_v3` in the first two cells are superseded by
+  `CityscapesDataset` and `train_transforms`/`val_transforms` further down. The notebook's markdown
+  explains why; both versions are left in place.
 
 ## Results
 
-_Fill in after running the notebook._
+_Fill in once the fine-tuned run completes._
 
 | Variant | Val mIoU |
 |---|---|
 | Frozen encoder | _fill in_ |
 | Fine-tuned | _fill in_ |
 
-## Running it
+## Structure
 
-1. Open `CitySegmentation.ipynb` in Colab. Runtime → Change runtime type → **T4 GPU**.
-2. Run top to bottom. The Cityscapes download cell requires a free account at [cityscapes-dataset.com](https://www.cityscapes-dataset.com/) (no Kaggle-style anonymous mirror, unlike HRSID) — verify the `csDownload` CLI flags yourself before relying on that cell, they're noted as unverified in the notebook.
-3. Checkpoints/metrics mirror to Google Drive (`/content/drive/MyDrive/CityscapesSegmentation-experiment`), so a disconnected/restarted runtime resumes instead of retraining from scratch.
+```
+CitySegmentation.ipynb    # the whole project: architecture, training loop, planned experiments
+pyproject.toml            # project metadata, dependencies, Ruff config
+requirements.txt          # same dependencies, pip format
+Makefile                  # setup / lint / format targets
+.gitignore                # dataset, checkpoints, caches, PyCharm files
+.pre-commit-config.yaml   # pre-commit hooks (the notebook is excluded)
+LICENSE                   # MIT
+data/                     # empty; the notebook extracts Cityscapes here (gitignored)
+models/                   # empty; checkpoints are written here (gitignored)
+```
 
-**Linting** (for any future `.py` scripts — the notebook itself is excluded from Ruff/pre-commit):
+## How to run
+
+Open `CitySegmentation.ipynb` in Colab, set Runtime → Change runtime type → **T4 GPU**, and run the
+cells top to bottom. The download cell needs a free account at
+[cityscapes-dataset.com](https://www.cityscapes-dataset.com/); `csDownload` prompts for those
+credentials itself. Checkpoints and `experiment_meta.json` are mirrored to Google Drive under
+`MyDrive/CityscapesSegmentation-experiment`, and a rerun resumes from the last completed epoch rather
+than starting over.
+
+**Untested:**
+
+- Running the notebook anywhere other than Colab. The Drive mount and the `!pip install` cells assume
+  a Colab runtime, and `albumentations`, `timm`, `grad-cam` and `cityscapesscripts` are not installed
+  in this repository's development environment — the versions in `requirements.txt` are unpinned for
+  exactly that reason.
+- The lint targets below. `ruff` is not installed here, so neither has been executed.
+
 ```bash
 make setup
 make lint
 make format
 ```
-
-## Repo structure
-
-```
-CitySegmentation.ipynb   # architecture (reference) + training pipeline + experiments
-requirements.txt         # torch, opencv-python, albumentations
-pyproject.toml            # Ruff config, project metadata
-.pre-commit-config.yaml   # pre-commit hooks (notebook excluded)
-```
-
-## Related
-
-Shares its ASPP/decoder design with [SAR-Ship-Segmentation](../SAR-Ship-Segmentation) (HRSID, SAR ship segmentation) — same architecture, same pretrained-encoder pivot, different domain.
 
 ## License
 
