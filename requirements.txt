@@ -1,3 +1,11 @@
-torch~=2.9.1
-opencv-python
+# Versions pinned to what is installed in the development environment.
+# Unpinned entries are NOT installed locally and could not be verified — see README.
+torch==2.9.0
+numpy==1.26.4
+opencv-python==4.12.0.88
+matplotlib==3.10.7
+tqdm==4.67.1
 albumentations
+timm
+grad-cam
+cityscapesscripts

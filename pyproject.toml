@@ -4,10 +4,19 @@ version = "0.1.0"
 description = "DeepLabV3+ built from scratch (Xception encoder, ASPP, decoder) for Cityscapes semantic segmentation."
 readme = "README.md"
 requires-python = ">=3.10"
+# Read from the notebook's actual imports. Versions are those installed in the development
+# environment; the last four are not installed locally, so they are left unpinned.
+# google.colab is not listed: it is provided by the Colab runtime, not installable from PyPI.
 dependencies = [
-    "torch~=2.9.1",
-    "opencv-python",
+    "torch==2.9.0",
+    "numpy==1.26.4",
+    "opencv-python==4.12.0.88",
+    "matplotlib==3.10.7",
+    "tqdm==4.67.1",
     "albumentations",
+    "timm",
+    "grad-cam",
+    "cityscapesscripts",
 ]
 
 [tool.ruff]
